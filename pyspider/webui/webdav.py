@@ -199,17 +199,21 @@ class NeedAuthController(object):
         return username == self.app.config.get('webui_username') \
             and password == self.app.config.get('webui_password')
 
-
 config = DEFAULT_CONFIG.copy()
 config.update({
     'mount_path': '/dav',
     'provider_mapping': {
         '/': ScriptProvider(app)
     },
-    'domaincontroller': NeedAuthController(app),
+    #'domaincontroller': NeedAuthController(app),
+    'http_authenticator': {
+        'HTTPAuthenticator':NeedAuthController(app),
+    },
+    
     'verbose': 1 if app.debug else 0,
+    
     'dir_browser': {'davmount': False,
-                    'enable': True,
+                    #'enable': True,
                     'msmount': False,
                     'response_trailer': ''},
 })

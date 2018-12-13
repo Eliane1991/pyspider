@@ -86,13 +86,13 @@ class Fetcher(object):
         self._running = False
         self._quit = False
         self.proxy = proxy
-        self.async = async_mode
+        self.async_mode = async_mode
         self.ioloop = tornado.ioloop.IOLoop()
 
         self.robots_txt_cache = {}
 
         # binding io_loop to http_client here
-        if self.async:
+        if self.async_mode:
             self.http_client = MyCurlAsyncHTTPClient(max_clients=self.poolsize,
                                                      io_loop=self.ioloop)
         else:
@@ -114,10 +114,10 @@ class Fetcher(object):
                 logger.exception(e)
 
     def fetch(self, task, callback=None):
-        if self.async:
-            return self.async_fetch(task, callback)
+        if self.async_mode:
+            return self.async_mode_fetch(task, callback)
         else:
-            return self.async_fetch(task, callback).result()
+            return self.async_mode_fetch(task, callback).result()
 
     @gen.coroutine
     def async_fetch(self, task, callback=None):
@@ -152,7 +152,7 @@ class Fetcher(object):
     def sync_fetch(self, task):
         '''Synchronization fetch, usually used in xmlrpc thread'''
         if not self._running:
-            return self.ioloop.run_sync(functools.partial(self.async_fetch, task, lambda t, _, r: True))
+            return self.ioloop.run_sync(functools.partial(self.async_mode_fetch, task, lambda t, _, r: True))
 
         wait_result = threading.Condition()
         _result = {}
