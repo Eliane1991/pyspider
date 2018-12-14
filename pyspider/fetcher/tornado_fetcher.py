@@ -115,9 +115,9 @@ class Fetcher(object):
 
     def fetch(self, task, callback=None):
         if self.async_mode:
-            return self.async_mode_fetch(task, callback)
+            return self.async_fetch(task, callback)
         else:
-            return self.async_mode_fetch(task, callback).result()
+            return self.async_fetch(task, callback).result()
 
     @gen.coroutine
     def async_fetch(self, task, callback=None):
@@ -152,7 +152,7 @@ class Fetcher(object):
     def sync_fetch(self, task):
         '''Synchronization fetch, usually used in xmlrpc thread'''
         if not self._running:
-            return self.ioloop.run_sync(functools.partial(self.async_mode_fetch, task, lambda t, _, r: True))
+            return self.ioloop.run_sync(functools.partial(self.async_fetch, task, lambda t, _, r: True))
 
         wait_result = threading.Condition()
         _result = {}
